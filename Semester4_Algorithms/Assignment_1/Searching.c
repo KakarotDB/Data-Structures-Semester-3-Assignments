@@ -62,6 +62,8 @@ int main() {
     for (int i = 0; i < n; i++) {
         array[i] = rand();
     }
+    printf("Array with 50k elements created!\n");
+    printf("\n");
     printf("Enter target element: ");
     scanf("%d", &target);
     printf("Performing linear search!\n");
@@ -85,13 +87,14 @@ int main() {
     printf("Performing binary search!\n");
     printf("First sorting the array!\n");
     start = clock();
-    quickSort(array, 0, n);
+    quickSort(array, 0, n - 1);
     end = clock();
     printf("Sorted the array!\n");
     printf("Time taken to sort array : %f\n",
            (double)(end - start) / CLOCKS_PER_SEC);
+    index = -1;
     start = clock();
-    while (left < right) {
+    while (left <= right) {
         mid = (left + right) >> 1;
         if (target < array[mid]) {
             comparisons_binary++;
@@ -112,5 +115,6 @@ int main() {
     }
     printf("Number of comparisons : %d\n", comparisons_binary);
     printf("Time taken: %f\n", (double)(end - start) / CLOCKS_PER_SEC);
+
     return 0;
 }
