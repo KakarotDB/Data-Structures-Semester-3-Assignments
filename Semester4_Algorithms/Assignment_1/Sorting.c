@@ -160,7 +160,7 @@ int main() {
 
     int sizes[] = {5000,  10000, 15000, 20000, 25000,
                    30000, 35000, 40000, 45000, 50000};
-    int num_sizes = sizeof(sizes) / sizeof(sizes[0]);
+    int num_sizes = 10;
 
     for (int i = 0; i < num_sizes; i++) {
         showStats(sizes[i]);
