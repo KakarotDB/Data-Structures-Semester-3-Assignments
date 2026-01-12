@@ -123,25 +123,25 @@ void showStats(int n) {
     start = clock();
     BubbleSort(temp, n);
     end = clock();
-    printf("%-10.4f | ", ((double)(end - start)) / CLOCKS_PER_SEC);
+    printf("%-10f | ", ((double)(end - start)) / CLOCKS_PER_SEC);
 
     memcpy(temp, master, n * sizeof(int)); // Reset array
     start = clock();
     InsertionSort(temp, n);
     end = clock();
-    printf("%-10.4f | ", ((double)(end - start)) / CLOCKS_PER_SEC);
+    printf("%-10f | ", ((double)(end - start)) / CLOCKS_PER_SEC);
 
     memcpy(temp, master, n * sizeof(int)); // Reset array
     start = clock();
     quickSort(temp, 0, n - 1);
     end = clock();
-    printf("%-10.4f | ", ((double)(end - start)) / CLOCKS_PER_SEC);
+    printf("%-10f | ", ((double)(end - start)) / CLOCKS_PER_SEC);
 
     memcpy(temp, master, n * sizeof(int)); // Reset array
     start = clock();
     mergeSort(temp, n);
     end = clock();
-    printf("%-10.4f |\n", ((double)(end - start)) / CLOCKS_PER_SEC);
+    printf("%-10f |\n", ((double)(end - start)) / CLOCKS_PER_SEC);
 
     free(master);
     free(temp);
