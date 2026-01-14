@@ -4,6 +4,7 @@ CFLAGS = -Wall -g
 LIB_NAME = lib_recursion.a
 
 all: client_program
+	./client_program
 
 client_program: main.o $(LIB_NAME)
 	$(CC) $(CFLAGS) main.o -L. -l_recursion -o client_program
@@ -22,5 +23,5 @@ main.o: main.cpp array_utils.h string_utils.h
 
 # Clean target
 clean:
-	del /f /q *.o *.a client_program.exe	
-#rm -f *.o *.a client_program
+#	del /f /q *.o *.a client_program.exe	
+	rm -f *.o *.a client_program
