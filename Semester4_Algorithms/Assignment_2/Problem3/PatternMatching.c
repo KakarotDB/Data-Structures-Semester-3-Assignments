@@ -76,5 +76,6 @@ int main() {
         printf("No matches found or invalid input\n");
     }
 
+    free(matches);
     return 0;
 }
