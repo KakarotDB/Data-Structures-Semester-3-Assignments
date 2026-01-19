@@ -99,13 +99,13 @@ int main() {
 
     printf("---------------- RESULTS ----------------\n");
     if (isSubset) {
-        printf("[YES] Set A is a SUBSET of Set B.\n");
+        printf("Set A is a SUBSET of Set B.\n");
         if (isProperSubset)
-            printf("[YES] Set A is a PROPER SUBSET.\n");
+            printf("Set A is a PROPER SUBSET.\n");
         else
-            printf("[NO] Set A is NOT a proper subset (Identical sets).\n");
+            printf("Set A is NOT a proper subset (Identical sets).\n");
     } else {
-        printf("[NO] Set A is NOT a subset of Set B.\n");
+        printf("Set A is NOT a subset of Set B.\n");
     }
     printf("-----------------------------------------\n");
 
