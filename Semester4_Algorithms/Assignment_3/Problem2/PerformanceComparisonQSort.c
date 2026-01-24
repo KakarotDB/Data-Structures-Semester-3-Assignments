@@ -1,7 +1,15 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
+#define ll long long
+
+typedef struct {
+    ll comparisons;
+    int max_depth;
+    double time_taken;
+} SortStats;
 
 void swap(int *a, int *b) {
     if (a == NULL || b == NULL)
@@ -11,31 +19,14 @@ void swap(int *a, int *b) {
     *b = temp;
 }
 
-int RandomPartition(int *a, int low, int high, int *comparisons) {
-    int pivot_index = low + (rand() % (high - low + 1));
-    int i = low - 1;
-    int pivot = a[pivot_index];
-    swap(&a[pivot_index], &a[high]);
-
-    for (int j = low; j < high; j++) {
-        (*comparisons)++;
-        if (a[j] <= pivot) {
-            swap(&a[++i], &a[j]);
-        }
+void shuffleArray(int *a, int n) {
+    for (int i = n - 1; i > 0; i--) {
+        int j = rand() % (i + 1);
+        swap(&a[i], &a[j]);
     }
-    swap(&a[++i], &a[high]);
-    return i;
-}
+};
 
-void RandomQuickSort(int *a, int low, int high, int *comparisons) {
-    if (low < high) {
-        int partition_index = RandomPartition(a, low, high, comparisons);
-        RandomQuickSort(a, low, partition_index - 1, comparisons);
-        RandomQuickSort(a, partition_index + 1, high, comparisons);
-    }
-}
-
-int StandardPartition(int *a, int low, int high, int *comparisons) {
+int StandardPartition(int *a, int low, int high, ll *comparisons) {
     int pivot_index = high;
     int i = low - 1;
     int pivot = a[pivot_index];
@@ -51,13 +42,57 @@ int StandardPartition(int *a, int low, int high, int *comparisons) {
     return i;
 }
 
-void StandardQuickSort(int *a, int low, int high, int *comparisons) {
+int RandomPartition(int *a, int low, int high, ll *comparisons) {
+    int pivot_index = low + (rand() % (high - low + 1));
+    swap(&a[pivot_index], &a[high]);
+    return StandardPartition(a, low, high, comparisons);
+}
+
+void RandomQuickSort(int *a, int low, int high, SortStats *stats,
+                     int currentDepth) {
+    if (currentDepth > stats->max_depth) {
+        stats->max_depth = currentDepth;
+    }
     if (low < high) {
-        int partition_index = RandomPartition(a, low, high, comparisons);
-        StandardQuickSort(a, low, partition_index - 1, comparisons);
-        StandardQuickSort(a, partition_index + 1, high, comparisons);
+        int partition_index =
+            RandomPartition(a, low, high, &stats->comparisons);
+        RandomQuickSort(a, low, partition_index - 1, stats, currentDepth + 1);
+        RandomQuickSort(a, partition_index + 1, high, stats, currentDepth + 1);
     }
 }
+
+void StandardQuickSort(int *a, int low, int high, SortStats *stats,
+                       int currentDepth) {
+    if (currentDepth > stats->max_depth) {
+        stats->max_depth = currentDepth;
+    }
+    if (low < high) {
+        int partition_index =
+            StandardPartition(a, low, high, &stats->comparisons);
+        StandardQuickSort(a, low, partition_index - 1, stats, currentDepth + 1);
+        StandardQuickSort(a, partition_index + 1, high, stats,
+                          currentDepth + 1);
+    }
+}
+
+SortStats runStandardSort(int *a, int n) {
+    SortStats s = {0, 0, 0.0};
+    clock_t start = clock();
+    StandardQuickSort(a, 0, n - 1, &s, 0);
+    clock_t end = clock();
+    s.time_taken = (double)(end - start) / CLOCKS_PER_SEC;
+    return s;
+}
+
+SortStats runRandomSort(int *a, int n) {
+    SortStats s = {0, 0, 0.0};
+    clock_t start = clock();
+    RandomQuickSort(a, 0, n - 1, &s, 0);
+    clock_t end = clock();
+    s.time_taken = (double)(end - start) / CLOCKS_PER_SEC;
+    return s;
+}
+
 void printArray(int *a, int n) {
     for (int i = 0; i < n; i++) {
         printf("%d ", a[i]);
@@ -65,42 +100,55 @@ void printArray(int *a, int n) {
     printf("\n");
 }
 
-bool isSorted(int *a, int n) {
-    for (int i = 1; i < n; i++) {
-        if (a[i - 1] > a[i])
-            return false;
-    }
-    return true;
+void analyze(char *name, int percent_duplicates, int n) {
+    printf("--- Analyzing %s (%d%% Duplicates) ---\n", name,
+           percent_duplicates);
+    int *original_data = (int *)malloc(n * sizeof(int));
+    int duplicate_count = (n * percent_duplicates) / 100;
+    int unique_count = n - duplicate_count;
+
+    for (int i = 0; i < duplicate_count; i++)
+        original_data[i] = 1;
+    for (int i = duplicate_count; i < n; i++)
+        original_data[i] = rand();
+
+    shuffleArray(original_data, n);
+
+    int *arr_std = (int *)malloc(n * sizeof(int));
+    int *arr_rnd = (int *)malloc(n * sizeof(int));
+
+    memcpy(arr_std, original_data, n * sizeof(int));
+    memcpy(arr_rnd, original_data, n * sizeof(int));
+
+    SortStats standard = runStandardSort(arr_std, n);
+    printf("[Standard QS]   Time: %.4fs | Comparisons: %llu | Max Depth: %d\n",
+           standard.time_taken, standard.comparisons, standard.max_depth);
+
+    SortStats random = runRandomSort(arr_rnd, n);
+    printf(
+        "[Randomized QS] Time: %.4fs | Comparisons : %llu | Max depth : %d\n",
+        random.time_taken, random.comparisons, random.max_depth);
+    printf("\n");
+
+    free(original_data);
+    free(arr_rnd);
+    free(arr_std);
 }
 
 int main() {
-    int n = (int)1e5;
+    int n = (int)1e4;
     srand(time(NULL));
 
-    int a1[n], a2[n], a3[n];
+    printf("Running analysis on array size %d\n", n);
 
-    // a1 will have 90% duplicates -> 90k elements will be the same
-    // a2 will have 50% duplicates -> 50k elements will be the same
-    // a3 will have 10% duplicates -> 10k elements will be the same
+    // 90% Duplicates
+    analyze("Array I", 90, n);
 
-    for (int i = 0; i < 90000; i++) {
-        a1[i] = 1;
-    }
-    for (int i = 90000; i < n; i++) {
-        a1[i] = rand();
-    }
+    // 50% Duplicates
+    analyze("Array II", 50, n);
 
-    for (int i = 0; i < 50000; i++) {
-        a2[i] = 1;
-    }
-    for (int i = 50000; i < n; i++) {
-        a2[i] = rand();
-    }
+    // 10% Duplicates
+    analyze("Array III", 10, n);
 
-    for (int i = 0; i < 10000; i++) {
-        a3[i] = 1;
-    }
-    for (int i = 10000; i < n; i++) {
-        a3[i] = rand();
-    }
+    return 0;
 }
