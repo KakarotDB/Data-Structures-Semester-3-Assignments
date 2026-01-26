@@ -18,8 +18,8 @@ void swap(int *a, int *b) {
 }
 
 int partition(int *a, int low, int high, sortMetrics *metrics) {
-    int pivot_index = low + rand() % (high - low + 1);
-    // int pivot_index = (high + low) >> 1;
+    // int pivot_index = low + rand() % (high - low + 1);
+    int pivot_index = (high + low) >> 1;
     swap(&a[pivot_index], &a[high]);
 
     int i = low - 1;
