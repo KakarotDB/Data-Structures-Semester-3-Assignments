@@ -136,7 +136,7 @@ void analyze(char *name, int percent_duplicates, int n) {
 }
 
 int main() {
-    int n = (int)1e4;
+    int n = (int)1e5;
     srand(time(NULL));
 
     printf("Running analysis on array size %d\n", n);
